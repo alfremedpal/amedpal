@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block header%}
+    <title>Alfredo Medina | Blog</title>
+    <meta name="description" content="Soluciones digitales para pequeñas y medianas empresas. Desarrollo de sitios y aplicaciones web, análisis de datos, bases de datos.">
+    <link rel="canonical" href="https://www.amedpal.com/"/>
+{% endblock header%}
+
+{% block content %}
+    <div style="margin-bottom: 50px;" class="container hello">
+        <h1>Blog.</h1>
+        <p>I write about Python, data analysis and FOSS.</p>
+        <input id="search" type="text" placeholder="Search...">
+    </div>
+
+    <div class="container" id="blogPosts">
+        <div class="article-box">
+            <a class="fill-box" href="{{url_for('index.blog_post', post='relationship-between-nba-players-heigh-and-weight-and-position')}}">
+                <h3>
+                    Relationship between NBA players positions and their height and weight with a KNN algorithm <span class="small">May 2, 2019</span>
+                </h3> 
+                <p>
+                    Visualizing how height and weight in NBA players impact on what position they play, 
+                    with the use of a KNN algorithm to predict new players
+                </p>
+            </a>
+        </div>
+        <div class="article-box">
+            <a class="fill-box" href="{{url_for('index.blog_post', post='yucatan-taffic-accidents')}}">
+                <h3>
+                    Yucatán Traffic Accidents <small class="small">April 1, 2019</small>
+                </h3> 
+                <p>
+                    A small (and rushed) analysis and regression excercise
+                </p>
+            </a>
+        </div> 
+        <div class="article-box">
+            <a class="fill-box" href="{{url_for('index.blog_post', post='where-nba-players-come-from')}}">
+                <h3>
+                    Where do NBA players come from? <small class="small">March 14, 2019</small>
+                </h3> 
+                <p>
+                    A visualization using spatial data and geopandas to observe which U.S. states have generated the largest amount of NBA players
+                </p>
+            </a>
+        </div>
+    </div>
+
+    
+{% endblock content %}
+
+{% block scripts %}
+    <script>
+        $(document).ready(function(){
+            $("#search").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $(".article-box").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+
+{% endblock scripts %}

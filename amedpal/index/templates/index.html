@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block header%}
+    <title>Alfredo Medina | Desarrollo web y datos</title>
+    <meta name="description" content="Soluciones digitales para pequeñas y medianas empresas. Desarrollo de sitios y aplicaciones web, análisis de datos, bases de datos.">
+    <link rel="canonical" href="https://www.amedpal.com/"/>
+{% endblock header%}
+
+{% block content %}
+    <div class="container hello">
+        <h1>Hola.</h1>
+        <div class="row">
+            <div class="col-md-7">
+                <p>
+                    Me llamo Alfredo Medina y me gusta desarrollar sitios y aplicaciones web con Python.
+                    Soy también entusiasta del análisis y visualización de datos, scripts de automatización,
+                    la seguridad informática y el software open source. Recientemente he estado trabajando mucho
+                    con Amazon Web Services buscando obtener mi certificación como un <i>AWS Certified Cloud Practitioner</i>.
+                </p>
+                <p>
+                    Disfruto especialmente de ayudar a negocios pequeños o locales, brindándoles la oportunidad de tener 
+                    presencia y herramientas digitales que los puedan ayudar a crecer o mostrar una imagen más 
+                    profesional.
+                </p>   
+                <p>
+                    <b>Ponte en contacto conmigo</b> y cuéntame que necesitas.
+                </p>
+            </div>
+            <div class="col">
+                <div class="box">
+                    <img src="/index-static/images/python.svg" width="50px;" height="50px;" alt="Python"> <span style="margin-left:20px;">Python</span>
+                </div>
+                <div class="box">
+                    <img src="/index-static/images/flask.svg" width="50px;" height="50px;" alt="Flask"> <span style="margin-left:20px;">Flask</span>
+                </div>
+                <div class="box">
+                    <img src="/index-static/images/web.svg" width="50px;" height="50px;" alt="Web"> <span style="margin-left:20px;">HTML & CSS + JS</span> 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="contacto" class="container clientes">
+        <h1>Contacto.</h1>
+        <p>
+            Mándame un correo sin compromiso.
+        </p>
+        <p>
+            <b style="font-size:1.25em;">info@amedpal.com</b>
+        </p>
+    </div>
+
+    <div class="container clientes">
+        <h1>Clientes y trabajos.</h1>
+        <p>
+            Ve en lo que me encuentro trabajando actualmente. Por el momento estoy disponible para más proyectos.
+        </p>
+        <div class="article-box">
+            <a class="fill-box">
+                <h3>Grupo Legado <small class="small">En desarrollo</small></h3>
+                Plataforma de noticias digital. El cliente es capaz de crear y editar artículos para su lectura. También tiene control total
+                de que es lo que se muestra en la página de bienvenida: el artículo más reciente, videos y posts de Instagram.
+            </a>
+        </div>
+    </div>
+
+    <div class="container articulos">
+        <h1>Artículos recientes.</h1>
+        <p>
+            Me gusta escribir de mis proyectos personales y de lo que aprendo de ellos. 
+            <a href="{{ url_for('index.blog') }}"><b>Visita mi blog</b></a> para ver todas mis publicaciones.
+        </p>
+        <div class="article-box">
+            <a class="fill-box" href="{{url_for('index.blog_post', post='relationship-between-nba-players-heigh-and-weight-and-position')}}">
+                <h3>Relationship between NBA players positions and their height and weight with a KNN algorithm <small class="small">May 2, 2019</small></h3> 
+                Visualizing how height and weight in NBA players impact on what position they play, 
+                with the use of a KNN algorithm to predict new players
+            </a>
+        </div>
+        <div class="article-box">
+            <a class="fill-box" href="{{url_for('index.blog_post', post='yucatan-taffic-accidents')}}">
+            <h3>Yucatán Traffic Accidents <small class="small">April 1, 2019</small></h3> 
+            A small (and rushed) analysis and regression excercise
+            </a>
+        </div> 
+        <div class="article-box">
+            <a class="fill-box" href="{{url_for('index.blog_post', post='where-nba-players-come-from')}}">
+            <h3>Where do NBA players come from? <small class="small">March 14, 2019</small></h3> 
+            A visualization using spatial data and geopandas to observe which U.S. states have generated the largest amount of NBA players
+            </a>
+        </div>
+    </div>   
+
+{% endblock content %}
+
+{% block scripts %}{% endblock scripts %}

@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block header%}
+    <title>Where do NBA players come from</title>
+    <meta name="description" content="Where do NBA players come from: a visualization using geopandas and spatial data.">
+{% endblock header%}
+
+{% block content %}
+
+    <!-- INFO -->
+    <div style="margin-top: 100px; margin-bottom: 50px;" class="container">
+        <h1>Where do NBA players come from</h1>
+        <h2>A visualization with geopandas and matplotlib</h2>
+        <div style="color: lightslategray">March 14, 2019</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="container">
+        <p class="paragraph container">
+            This was one of my first encounters and first project involving spatial data and geopandas. I made a 
+            small <a href="https://www.reddit.com/r/nba/comments/b0navl/where_do_american_nba_players_come_from_oc/">reddit post</a> 
+            about it. If you want more information and some Q&A's I suggest you give the post a look.
+        </p>
+    
+        <p class="paragraph container">
+            This is not intended to be a tutorial but a kind-of-vague explanation on how I did it. You can check out my
+            <a href="https://github.com/alfremedpal">github</a> or this project's 
+            <a href="https://github.com/alfremedpal/amedpal-blog/tree/master/where-do-nba-players-come-from">repository</a> 
+            if you want to download both the data and source code. To view the notebook online click  
+            <a href="https://nbviewer.jupyter.org/github/alfremedpal/amedpal-blog/blob/master/where-do-nba-players-come-from/where_nba_players_come_from.ipynb">here</a>. 
+        </p>     
+    
+        <p class="paragraph container">
+            I decided to split this project into three areas: <b>reading</b>, <b>preparing</b>, and <b>visualizing</b> the data. 
+            The following blocks of code are extracts from my complete notebook which can be found 
+            <a href="https://github.com/alfremedpal/amedpal-blog/tree/master/where-do-nba-players-come-from">here</a>.
+        </p>
+        
+        <h3 class="title">Reading the data</h3>
+        <p class="paragraph container">
+            First things first, getting the data. <a href="https://www.naturalearthdata.com/">Natural Earth Data</a> 
+            is a great source of geospatial information in the form of <b>.shp files</b>; in this case I downloaded 
+            the states and provinces dataset in a 1:10 scale. After downloaded, the files need to be read and, since
+            this dataset contains information from all countries around the world, I had to select only the states
+            which belong to the U.S.A.  
+        </p>
+        
+        <pre class="prettyprint lang-py">
+
+        states = gpd.read_file("ne_10m_admin_1_states_provinces.shp")
+        usa_states = states[states["admin"] == "United States of America"]
+        players_usa_states = pd.read_csv("players_usa_states.csv")
+        </pre>
+ 
+        
+        <p class="paragraph container">
+            The last line of the previous block of code is just an extra .csv file I put together with the information on how many
+            players each American state has ever produced, and the population for that particular state.
+        </p>
+    
+        <h3 class="title">Preparing the data</h3>
+        <p class="paragraph container">
+            Although we now have all the information in normal dataframes and <b>geodataframes</b>, we still need to make some 
+            adjustments to the data. I started with the basic like keeping only the useful columns, changing the 
+            <b>Coordinate Reference System</b> (CRS), and sorting by state name.
+        </p>
+
+        <pre class="prettyprint lang-py">
+
+        usa_states = usa_states[["state", "geometry"]]
+        usa_states = usa_states.to_crs(epsg=3395)
+        usa_states.sort_values("state", inplace=True)
+        </pre>
+    
+        <p class="paragraph container">
+            The bext step was to merge both frames, but before doing that I had to make sure their shapes matched. 
+            After merging we can peek on how the final frame is looking with <b>.head(3)</b>.   
+        </p>
+    
+        <pre class="prettyprint lang-py">
+
+        print(usa_states.shape)
+        print(players_usa_states.shape)
+        usa_states = pd.merge(usa_states, players_usa_states, on="state")
+
+        usa_states.head(3)
+        </pre>
+        
+    
+        <div class="paragraph table-scroll container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">state</th>
+                        <th scope="col">geometry</th>
+                        <th scope="col">player_count</th>
+                        <th scope="col">pop</th>
+                        <th scope="col">urban%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">0</th>
+                        <td>Alabama</td>
+                        <td>POLYGON</td>
+                        <td>83</td>
+                        <td>4887871</td>
+                        <td>59.0</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Alaska</td>
+                        <td>POLYGON</td>
+                        <td>1</td>
+                        <td>737438</td>
+                        <td>66.0</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>Arizona</td>
+                        <td>POLYGON</td>
+                        <td>15</td>
+                        <td>7171646</td>
+                        <td>89.8</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    
+        <h3 class="title">Visualizing the data</h3>
+        <p class="paragraph container">
+            Now comes the fun part: visualizing! The argument <i>'column'</i> takes the values from the specified column 
+            name and it will then use those values to paint the choropleth map. The <i>.set</i> method simply sets the range
+            of coordinates to be rendered. In this case we are focusing on the United States and, to keep things
+            simpler and cleaner, I decided not to include Alaska or Hawaii.
+        </p>
+
+        <pre class="prettyprint lang-py">
+
+        fig, ax = plt.subplots(figsize=(10,5))
+        usa_states.plot(ax=ax, column="player_count", cmap="YlGn", edgecolor="k", legend=True)
+        ax.set_title("Number of NBA players by state of origin")
+        ax.set_axis_off()
+        ax.set(xlim=(-1.4*10**7, -0.74*10**7), ylim=(0.2750*10**7, 0.65*10**7))
+        </pre>
+    
+        <div class="row justify-content-center align-items-center">
+            <img src="/index-static/images/blog/nba_by_state_origin.png" class="img-fluid" alt="NBAByStateOrigin">
+        </div>
+
+        <p class="paragraph container">
+            It looks good but eh... it doesn't tell you much. You can see that states with large amounts of NBA players 
+            are also the ones with big populations (like California and New York). Therefore this is bascially just a population map and 
+            not very interesting (<a href="https://xkcd.com/1138/">relevant xkcd</a>).
+        </p>
+    
+        <p class="paragraph container">
+            To "fix" this I decided to plot maps with the number of NBA players by state of origin per 10,000 population, and per
+            10k population living in urban areas. In order to achive this though, I had to add some new columns to the dataframe.
+        </p>
+
+        <pre class="prettyprint lang-py">
+
+        usa_states["per_10k"] = (usa_states["player_count"] / usa_states["pop"]) * 10000
+        usa_states["urban_pop"] = usa_states["pop"] * (usa_states["urban%"] / 100)
+        usa_states["per_10k_urban"] = (usa_states["player_count"] / usa_states["urban_pop"]) * 10000
+        </pre>
+    
+        <div class="row justify-content-center align-items-center">
+            <img src="/index-static/images/blog/nba_by_state_10k.png" class="img-fluid" alt="NBAByState10K">
+            <img src="/index-static/images/blog/nba_by_state_10k_urban.png" class="img-fluid" alt="NBAByState10KUrban">
+        </div>
+    
+        <p class="paragraph container">
+            Now this is more useful!  
+        </p>
+    
+        <h3 class="title">Conclusion and final notes</h3>
+        <p class="paragraph container">
+            We can see that California is the biggest porfessional player generator with 395, followed by New York with 356, 
+            but as stated before, this is not a big surprise since their population is quite big. The state with more players 
+            per 10,000 population is District of Columbia with just a bit over 1 player. The second and third states are Mississippi 
+            and Louisiana with 0.29 and 0.25 players per 10,000 respectively. The big difference between the per 10k
+            values of the first and second states was the reason I decided to explicitly set the max value of the color bar,
+            otherwise the map would have looked mostly white. Alaska and Hawaii have produced 1 and 2 professional basketball 
+            players respectively.
+        </p>
+    
+        <p class="paragraph container">
+            <b>Also, if you are wondering why Michigan looks funny</b>, it is because it was plotted with its legal boundry which 
+            includes a lot of water.
+        </p>
+    
+        <p class="paragraph container">
+            This was a small, fun project which helped me understand better spatial data and its manipulation and visualization using 
+            Python. I'm happy on how it turned out and I may explore some vartions like how many points (or blocks, rebounds, etc.) 
+            each state has yielded. 
+        </p>
+        
+        <p class="paragraph container">
+            The information on the actual number of NBA players by state is according to 
+            <a href="https://www.basketball-reference.com/">basketball-reference</a>. The population 
+            numbers are according to wikipedia. You can find the complete notebook 
+            <a href="https://github.com/alfremedpal/amedpal-blog/tree/master/where-do-nba-players-come-from">here</a>.
+        </p>
+    
+        <h3 class="title">Bonus: Europe!</h4>
+        <p class="paragraph container">
+            The European continent.
+        </p>
+            
+        <div class="row justify-content-center align-items-center">
+            <img src="/index-static/images/blog/nba_by_country_europe.png" class="img-fluid" alt="NBAByCountryEurope">
+        </div>
+    </div>
+    
+{% endblock content %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+{% endblock scripts %}

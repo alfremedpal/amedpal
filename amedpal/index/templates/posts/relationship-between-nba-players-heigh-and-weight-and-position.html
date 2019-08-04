@@ -1,0 +1,425 @@
+{% extends "base.html" %}
+
+{% block header%}
+    <title>Relationship between NBA players positions and their height and weight with a KNN algorithm </title>
+    <meta name="description" content="Exploring the relationship between NBA players' measurements and their position; using a KNN algorithm.">
+{% endblock header%}
+
+{% block content %}
+
+    <!-- INFO -->
+    <div style="margin-top: 100px; margin-bottom: 50px;" class="container">
+        <h1>Relationship between NBA players positions and their height and weight</h1>
+        <h2>With a k-nearest neighbors algorithm</h2>
+        <div style="color: lightslategray">May 2, 2019</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="container">
+        <p class="paragraph container">
+            Modern basketball has 5 player positions: <b>point guard</b> (PG), <b>shooting guard</b> (SG), <b>small forward</b> 
+            (SF), <b>power forward</b> (PF), and <b>center</b> (C). Each position requires a different set of skills, as they
+            they have different responsabilities on the court. Height and weight can also help excel at certain postitons. 
+            For example, centers (the tallest and heaviest of the team) usually play near the baseline or close to the 
+            basket.
+        </p>
+        
+        <p class="paragraph container">
+            I decided to visualize this relationship between height and weight, and the basketball position among NBA players.
+            Once gathered all the information, build a model that could take custom height and weight parameters in 
+            order to predict or determine into which position the body measurements fit best.
+        </p>
+        
+        <h3 class="title">Data</h3>
+        <p class="paragraph container">
+            <b>basketball-reference.com</b> (BR) is a great website for everything basketball related and the perfect source 
+            for all the information I needed. BR has a player directory which include all NBA and ABA players from all 
+            time indexed by letter with their respective position, height, and weight. There is just one problem. If you visit
+            a player's page on BR it will tell you their specific position or role such as PG or SF, but in the players by letter
+            index the positions are the "old" or "original" positions which are just 3: <b>guard</b>, <b>forward</b> and,
+            <b>center</b>.  
+        </p>
+        
+        <p class="paragraph container">
+            As much as I would have loved to use the 5 modern positions, scraping each individual player's page was far more 
+            complex and time consuming than gathering the data from the players by letter pages. Fun fact, there are no players
+            (last name) with the letter 'X'. 
+        </p>
+        
+        <p class="paragraph container">
+            I used <b>BeautifulSoup 4</b> and some of the source code of 
+            <a href="https://github.com/alfremedpal/PandasBasketball">PandasBasketball</a> to scrape the data off BR. 
+            But there was another problem: some players can play up to 2 roles, making the positions: G, F, C, F-G, G-F,
+            F-C, and C-F for a total of 7 positions. So I had to clean this up by renaming the duplicates like G-F and F-G.
+            I finally ended up with only 5 positions, or set of positions: 
+            
+            
+            <ul class="list" style="color: black;">
+                <li><b>G</b> - Guard</li>
+                <li><b>F</b> - Forward</li>
+                <li><b>C</b> - Center</li>
+                <li><b>G-F</b> - Guard-Forward</li>
+                <li><b>F-C</b> - Forward-Center</li>
+            </ul>
+        </p>
+        
+        <p class="paragraph container">
+            After changing from imperial units to the metric system, the <b>4685x8</b> data frame looked like this:
+        </p>
+        
+        <div class="paragraph table-scroll container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Player</th>
+                        <th scope="col">From</th>
+                        <th scope="col">To</th>
+                        <th scope="col">Pos</th>
+                        <th scope="col">Ht</th>
+                        <th scope="col">Wt</th>
+                        <th scope="col">Birth Date</th>
+                        <th scope="col">Colleges</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">0</th>
+                        <td>Alaa Abdelnaby</td>
+                        <td>1991</td>
+                        <td>1995</td>
+                        <td>F-C</td>
+                        <td>2.082823</td>
+                        <td>108.862169</td>
+                        <td>June 24, 1968</td>
+                        <td>Duke University</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Zaid Abdul-Aziz</td>
+                        <td>1969</td>
+                        <td>1978</td>
+                        <td>F-C</td>
+                        <td>2.057423</td>
+                        <td>106.594207</td>
+                        <td>April 7, 1946</td>
+                        <td>Iowa State University</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>Kareem Abdul-Jabbar</td>
+                        <td>1970</td>
+                        <td>1989</td>
+                        <td>C</td>
+                        <td>2.184426</td>
+                        <td>102.058283</td>
+                        <td>April 16, 1947</td>
+                        <td>University of California, Los Angeles</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">n</th>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <p class="paragraph container">
+            If you want to download the whole dataset as a <b>.csv file</b>, click
+            <a href="https://github.com/alfremedpal/amedpal-blog/blob/master/nba-positions-height-weight-knn/all_players.csv">
+                here
+            </a>.
+        </p>
+        
+        <h3 class="title">Visualization</h3>
+        <p class="paragraph container">
+            Plotting all players' height (y) and weight (x) grouped by their position resulted in this image:
+        </p>
+
+        <div class="row justify-content-center align-items-center">
+            <img src="/index-static/images/blog/nba_positions_scatter.png" class="img-fluid" alt="NBAPostionsScatter">
+        </div>
+        
+        <p class="paragraph container">
+            This is somewhat useful, but the plot felt a little bit too cramped and some of the colors like the 
+            blue with the purple and the red with the orange were not as distinguishable as I would have liked. 
+            So, I decided to plot some pair plots splitting positions into groups. In seaborn, the <b>pair plot 
+            function</b> will create a grid of Axes such that each variable in the data will be shared in the 
+            y-axis across a single row and in the x-axis across a single column. The diagonal Axes are treated 
+            differently, drawing a plot to show the univariate distribution of the data for the variable in that 
+            column.
+        </p>
+        
+        <p class="paragraph container">
+            The pair plot with all 5 positions is practically the same: too many points overlapping each other
+            making it difficult to appreciate each group. 
+        </p>
+        
+        <div class="row justify-content-center align-items-center">
+            <img src="/index-static/images/blog/nba_positions_pairplot_all.png" class="img-fluid" alt="NBAPositionsPairplotAll">
+        </div>
+        
+        <p class="paragraph container">
+            But using a group containing only the G, F, and C postitions and another group with G-F and F-C, helped 
+            (at least to me) to better visualize how are positions spread depending on the height and the weight.
+        </p>
+        
+        <div class="row justify-content-center align-items-center">
+            <img src="/index-static/images/blog/nba_positions_pairplot_three.png" class="img-fluid" alt="NBAPositionsPairplotThree">
+        </div>
+        
+        <div class="row justify-content-center align-items-center">
+            <img src="/index-static/images/blog/nba_positions_pairplot_two.png" class="img-fluid" alt="NBAPositionsPairplotTwo">
+        </div>
+        
+        <p class="paragraph container">
+            Any basketball fan will tell you that the visualization does not provide any significal new information.
+            We already knew that <b>guards are shorter and lighter</b>, making them perfect for dribbling, that 
+            <b>centers are the tallest and heaviest</b> to help protect the rim, and that <b>forwards are versatile</b>
+            being in between.  
+        </p>
+        
+        <p class="paragraph container">
+            The G-F and F-C group was trivial as well, both spanning their corresponding individual positions along 
+            their respective area. 
+        </p>
+        
+        <h3 class="title">KNN algorithm</h3>
+        <p class="paragraph container">
+            The k-nearest neighbors algorithm (KNN) is a non-parametric method used for classification and regression. 
+            Given a new sample (like the green dot), the algorithm will take the sample's k nearest neighbors (red 
+            triangles and blue square) by measuring the distance. After that, the algorithm will 
+            assign the green dot to either the triangle or the square category depending on which was more dominant 
+            among the neighbors. In this example, since 2 of the 3 neighbors of the green dot are red triangles, the new
+            sample would be assigned to this category. 
+        </p>
+        
+        <div style="margin-bottom:1.5em;" class="row justify-content-center align-items-center">
+            <img src="/index-static/images/blog/knn_example.png" class="img-fluid" width="300", height="300" alt="KNNExample">
+        </div>
+        
+        <p class="paragraph container">
+            To apply this algorithm to my data set first I had to create a new column called "Cat", numbered from 0 to 4
+            to represent each position. The updated data frame then looked like this:
+        </p>
+        
+        <div class="paragraph table-scroll container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Player</th>
+                        <th scope="col">From</th>
+                        <th scope="col">To</th>
+                        <th scope="col">Pos</th>
+                        <th scope="col">Ht</th>
+                        <th scope="col">Wt</th>
+                        <th scope="col">Birth Date</th>
+                        <th scope="col">Colleges</th>
+                        <th scope="col">Cat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">0</th>
+                        <td>Alaa Abdelnaby</td>
+                        <td>1991</td>
+                        <td>1995</td>
+                        <td>F-C</td>
+                        <td>2.082823</td>
+                        <td>108.862169</td>
+                        <td>June 24, 1968</td>
+                        <td>Duke University</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>Zaid Abdul-Aziz</td>
+                        <td>1969</td>
+                        <td>1978</td>
+                        <td>F-C</td>
+                        <td>2.057423</td>
+                        <td>106.594207</td>
+                        <td>April 7, 1946</td>
+                        <td>Iowa State University</td>
+                        <td>2</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>Kareem Abdul-Jabbar</td>
+                        <td>1970</td>
+                        <td>1989</td>
+                        <td>C</td>
+                        <td>2.184426</td>
+                        <td>102.058283</td>
+                        <td>April 16, 1947</td>
+                        <td>University of California, Los Angeles</td>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">n</th>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <p class="paragraph container">
+            I then split the data into training and test sets, scaled them, and built the actual classifier. The following block of code 
+            is an extract of this project's notebook. If you want to view or download the notebook click
+            <a href="https://github.com/alfremedpal/amedpal-blog/blob/master/nba-positions-height-weight-knn/nba_positions.ipynb">here</a>. 
+        </p>
+
+        <pre class="prettyprint lang-py">
+
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+            
+            sc_X = StandardScaler()
+            X_train = sc_X.fit_transform(X_train)
+            X_test = sc_X.fit_transform(X_test)
+            
+            classifier = KNeighborsClassifier(n_neighbors=5, metric="minkowski", p=2)
+            classifier.fit(X_train, y_train)
+        </pre>
+        
+        <p class="paragraph container">
+            To test how accurate my model was, I used a <b>confusion matrix</b>. A confusion matrix is a specific table layout 
+            that allows visualization of the performance of an algorithm. Each row of the matrix represents the instances in a 
+            predicted class while each column represents the instances in an actual class (or vice versa).
+        </p>
+        <div class="paragraph table-scroll container">
+            <table class="table">
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th colspan="5">Actual pos</th>
+                </tr>
+                <tr>
+                    <td scope="col"></td>
+                    <td scope="col"></td>
+                    <td scope="col">G</td>
+                    <td scope="col">F</td>
+                    <td scope="col">C</td>
+                    <td scope="col">G-F</td>
+                    <td scope="col">F-C</td>
+                </tr>
+                <tr>
+                    <td rowspan="5"><b>Predicted pos</b></td>
+                    <td scope="row">G</td>
+                    <td><b>347</b></td>
+                    <td>46</td>
+                    <td>1</td>
+                    <td>15</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td scope="row">F</td>
+                    <td>39</td>
+                    <td><b>212</b></td>
+                    <td>18</td>
+                    <td>7</td>
+                    <td>21</td>
+                </tr>
+                <tr>
+                    <td scope="row">C</td>
+                    <td>1</td>
+                    <td>30</td>
+                    <td><b>86</b></td>
+                    <td>0</td>
+                    <td>18</td>
+                </tr>
+                <tr>
+                    <td scope="row">G-F</td>
+                    <td>89</td>
+                    <td>56</td>
+                    <td>0</td>
+                    <td><b>17</b></td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td scope="row">F-C</td>
+                    <td>15</td>
+                    <td>73</td>
+                    <td>44</td>
+                    <td>2</td>
+                    <td><b>33</b></td>
+                </tr>
+            </table>
+        </div>
+        
+        <p class="paragraph container">
+            The matrix shows that the model has no major problem distinguishing between single positions among each other 
+            (G, F, C), but it is a little bit harder for the two-role positions (G-F, F-C). It is far from perfect but 
+            it will work just fine for some educated guessing or prediction. 
+        </p>
+        
+        <p class="paragraph container">
+            The visualized KNN agorithm looks like this:
+        </p>
+        
+        <div class="row justify-content-center align-items-center">
+            <img src="/index-static/images/blog/nba_positions_knn.png" class="img-fluid" alt="NBAPositions">
+        </div>
+        
+        <p class="paragraph container">
+            We can clearly see that the areas for the G, F, and C positions are pretty well defined, while the G-F
+            and F-C position areas are just patched around the middle.
+        </p>
+        
+        <p class="paragraph container">
+            Finally I wrote a small function that takes any height (m) and weight (kg) to predict to which position is the 
+            person better suited for. I used my own height and weight and got the following results:
+        </p>
+
+        <pre class="prettyprint lang-py">
+
+            predict_pos(1.90, 85)
+        </pre>
+
+        <p class="paragraph container">
+
+            Prob of being guard: 0.8 <br>
+            Prob of being forward: 0.0<br>
+            Prob of being center: 0.0<br>
+            Prob of being guard-forward: 0.2<br>
+            Prob of being forward-center: 0.0
+        <p>
+        
+        <p class="paragraph container">
+            According to my model, I'm better suited to be a guard.
+        </p>
+        
+        <h3 class="title">Final notes</h3>
+        <p class="paragraph container">
+            I learned a lot doing this analysis, particularly the KNN classification method and its visualization. Although I 
+            know it is not perfect and there could be a couple of things I could tweak to maybe make it a little bit better,
+            I'm really happy with the result.
+        </p>
+        
+        <p class="paragraph container">
+            If you want to download the whole notebook and the data you can go to 
+            <a href="https://github.com/alfremedpal/amedpal-blog/tree/master/nba-positions-height-weight-knn">
+            this project's repo on github</a>.
+        </p>
+    </div>
+    
+{% endblock content %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+{% endblock scripts %}
