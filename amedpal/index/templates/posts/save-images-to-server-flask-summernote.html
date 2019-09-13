@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block header%}
+    <title>How to save images directly to server with summernote and Flask</title>
+    <meta name="description" content="How to save images directly to server with summernote and Flask - Tutorial">
+{% endblock header%}
+
+{% block content %}
+
+    <!-- INFO -->
+    <div style="margin-top: 100px; margin-bottom: 50px;" class="container">
+        <h1>How to save images directly to server with summernote and Flask</h1>
+        <h2>Small tutorial</h2>
+        <div style="color: lightslategray">September 12, 2019</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="container">
+        <p class="paragraph container">
+            <a href="https://summernote.org/">Summernote</a> is a "super simple WYSIWYG editor on 
+            bootstrap". I got to use it recently for a client's website, and I can say liked it, it was 
+            a breeze to set up and get it to work, easily customizable as well. There was just one problem.
+            By default, Summernote saves images in base64, which is not necessarily a bad thing, but for this
+            particular case I needed to store the images directly on the server.
+        </p>
+        <p class="paragraph container">
+            I based my solution on a <a href="https://stackoverflow.com/questions/21628222/summernote-image-upload">stack overflow answer</a> 
+            and Flask's official docs on <a href="http://flask.palletsprojects.com/en/1.1.x/patterns/fileuploads/">how to upload files</a>.
+            Now, I'm a huge Flask fan but I gotta admit this is easier (in theory, I haven't actually tried) with Django as it has a Summernote
+            <a href="https://github.com/summernote/django-summernote">extension</a> which I <i>think</i> you can configure to save images
+            directly to the server.
+        </p>
+        <h3 class="title">Javascript</h3>
+        <p class="paragraph container">
+            First thing is to actually initialize the Summernote editor
+        </p>
+        <pre class="prettyprint lang-js">
+
+        $('#summernote').summernote({
+            placeholder: 'Write here',
+            tabsize: 2,
+            height: 500,
+            callbacks: {
+                onImageUpload: function(image) {
+                    uploadImage(image[0]);
+                }
+            }
+        });
+        </pre>
+        <p class="paragraph container">
+            This is just the basic set up of the editor, the only thing you should pay attention to is the 
+            <b>callback</b> part. Everytime you upload an image, the <i class="inline-pre">onImageUpload</i> function will be called.
+            By default this saves the images a base64 string, so what we are doing here is overwriting that and calling our
+            own function: <i class="inline-pre">uploadImage</i>.
+        </p>
+        <p class="paragraph container">
+            Our <i class="inline-pre">uploadImage</i> function looks like this:
+        </p>
+        <pre class="prettyprint lang-js">
+
+        function uploadImage(image) {
+            var data = new FormData();
+            data.append("image", image);
+            $.ajax({
+                url: "/my_flask_endpoint",
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: data,
+                type: "POST",
+                success: function(filename) {
+                    var image = $('<img>').attr('src', '/route/to/images/' + filename).addClass("img-fluid");
+                    $('#summernote').summernote("insertNode", image[0]);
+                },
+                error: function(data) {
+                    console.log(data);
+                }
+            });
+        }
+        </pre>
+        <p class="paragraph container">
+            Each time we insert an image using the editor it calls our custom function, which at the same time makes
+            an AJAX call to one of our Flask's routes, <i class="inline-pre">my_flask_endpoint</i>. If the AJAX call
+            is successfull, then we create the img HTML tag using the image's filename (returned from our Flask route).
+        </p>
+        <h3 class="title">Python</h3>
+        <p class="paragraph container">
+            We now have to set our <i class="inline-pre">my_flask_endpoint</i> route to actually save the image.
+        </p>
+        <pre class="prettyprint lang-py">
+
+        @app.route("/my_flask_endpoint", methods=["GET", "POST"])
+        def _my_flask_endpoint():
+            if request.method == "POST":
+                file = request.files["image"]
+                if file.filename == '':
+                    return "error.png"
+                if file and allowed_file(file.filename): 
+                    if os.path.exists(app.config["UPLOAD_FOLDER"] + "/" + file.filename): # if image with same name exists
+                        _dot = file.filename.find(".")
+                        file.filename = file.filename[:_dot] + str(uuid.uuid4()) + file.filename[_dot:]
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.normpath(os.path.join(app.config["UPLOAD_FOLDER"], filename)))
+                    return file.filename
+        </pre>
+        <p class="paragraph container">
+            The python code is pretty straight forward. First we check if the request type was POST, if it is,
+            then we get the actual image with <i class="inline-pre">file = request.files["image"]</i> If for some 
+            reason its filename is an empty string, then we return "error.png" which can be an already existing
+            image that would appear in the summernote editor telling the user there was a problem with their file.
+        </p>
+        <p class="paragraph container">
+            Next step is to verify that the file exists, and if it is allowed. The <i class="inline-pre">allowed_file</i> function
+            is given by Flask's official docs:
+        </p>
+        <pre class="prettyprint lang-py">
+
+        ALLOWED_EXTENSIONS = set(["png", "jpg", "jpeg", "gif"])
+
+        def allowed_file(filename):
+            return '.' in filename and \
+                filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        </pre>
+        <p class="paragraph container">
+            The next part is to check if an image with the same name already exists in the specified location. If it does,
+            then we only modify the filename by adding a random string using <i class="inline-pre">uuid</i>. If you don't want to save
+            the same image twice, you can return the same "error.png" image to tell the user to upload an image with another name:
+        </p>
+        <pre class="prettyprint lang-py">
+
+        if os.path.exists(app.config["UPLOAD_FOLDER"] + "/" + file.filename):
+            return "error.png"
+        </pre>
+        <p class="paragraph container">
+            Lastly, we secure the file by importing and using <i>secure_filename</i> from <i>werkzeug.utils</i>, save the iamge,
+            and return its name.
+        </p>
+        <p class="paragraph container">
+            That's it! Everytime the user inserts an image it should be visible from the editor and saved to the server. I hope this 
+            was useful.
+        </p>
+    </div>
+    
+{% endblock content %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+{% endblock scripts %}

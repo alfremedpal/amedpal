@@ -15,6 +15,16 @@
 
     <div class="container" id="blogPosts">
         <div class="article-box">
+            <a class="fill-box" href="{{url_for('index.blog_post', post='save-images-to-server-flask-summernote')}}">
+                <h3>
+                    How to save images directly to server with summernote and Flask <small class="small">September 12, 2019</small>
+                </h3> 
+                <p>
+                    Small tutorial
+                </p>
+            </a>
+        </div>
+        <div class="article-box">
             <a class="fill-box" href="{{url_for('index.blog_post', post='relationship-between-nba-players-heigh-and-weight-and-position')}}">
                 <h3>
                     Relationship between NBA players positions and their height and weight with a KNN algorithm <span class="small">May 2, 2019</span>
@@ -46,7 +56,7 @@
             </a>
         </div>
     </div>
-
+    save-images-to-server-flask-summernote
     
 {% endblock content %}
 
@@ -61,5 +71,4 @@
             });
         });
     </script>
-
 {% endblock scripts %}
