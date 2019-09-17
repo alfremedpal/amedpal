@@ -144,6 +144,13 @@ h1 {
     
 }
 
+#englishBanner {
+    background-color: rgba(225, 225, 225, 0.5);
+    border-left: 5px solid rgba(200, 200, 200, 1);
+    padding-left: 5px;
+    display: none;
+}
+
 /* desert scheme ported from vim to google prettify */
 pre.prettyprint { display: block; background-color: #333 }
 pre .nocode { background-color: none; color: #000 }

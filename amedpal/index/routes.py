@@ -7,6 +7,11 @@ from . import index
 def home():
     return render_template("index.html")
 
+@index.route("/en")
+def home_en():
+    return render_template("index-en.html")
+
+
 @index.route("/blog")
 def blog():
     return render_template("blog.html")

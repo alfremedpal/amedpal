@@ -19,7 +19,7 @@
         <p class="paragraph container">
             <a href="https://summernote.org/">Summernote</a> is a "super simple WYSIWYG editor on 
             bootstrap". I got to use it recently for a client's website, and I can say liked it, it was 
-            a breeze to set up and get it to work, easily customizable as well. There was just one problem.
+            a breeze to set up and get it to work; easy to customize as well. There was just one problem.
             By default, Summernote saves images in base64, which is not necessarily a bad thing, but for this
             particular case I needed to store the images directly on the server.
         </p>
@@ -105,7 +105,7 @@
         </pre>
         <p class="paragraph container">
             The python code is pretty straight forward. First we check if the request type was POST, if it is,
-            then we get the actual image with <i class="inline-pre">file = request.files["image"]</i> If for some 
+            then we get the actual image with <i class="inline-pre">file = request.files["image"]</i>. If for some 
             reason its filename is an empty string, then we return "error.png" which can be an already existing
             image that would appear in the summernote editor telling the user there was a problem with their file.
         </p>

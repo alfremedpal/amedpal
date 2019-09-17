@@ -2,12 +2,15 @@
 
 {% block header%}
     <title>Alfredo Medina | Desarrollo web y datos</title>
-    <meta name="description" content="Soluciones digitales para pequeñas y medianas empresas. Desarrollo de sitios y aplicaciones web, análisis de datos, bases de datos.">
+    <meta name="description" content="Soluciones digitales para pequeñas y medianas empresas. Desarrollo de sitios y aplicaciones web, análisis y visualización de datos, bases de datos y más.">
     <link rel="canonical" href="https://www.amedpal.com/"/>
 {% endblock header%}
 
 {% block content %}
     <div class="container hello">
+        <div id="englishBanner">
+            No Spanish? Click <a href="{{url_for('index.home_en')}}">here</a> to be redirected to the English version!
+        </div>
         <h1>Hola.</h1>
         <div class="row">
             <div class="col-md-7">
@@ -18,7 +21,7 @@
                     con Amazon Web Services buscando obtener mi certificación como un <i>AWS Certified Cloud Practitioner</i>.
                 </p>
                 <p>
-                    Disfruto especialmente de ayudar a negocios pequeños o locales, brindándoles la oportunidad de tener 
+                    Disfruto especialmente de trabajar con negocios pequeños o locales, brindándoles la oportunidad de tener 
                     presencia y herramientas digitales que los puedan ayudar a crecer o mostrar una imagen más 
                     profesional.
                 </p>   
@@ -86,6 +89,20 @@
         </div>
     </div>   
 
+    <div class="container footer">
+        <a href="mailto:info@amedpal.com">Contacto</a> · <a href="https://github.com/alfremedpal">Github</a> · <a href="https://github.com/alfremedpal/amedpal">Fuente</a>  
+    </div> 
+
 {% endblock content %}
 
-{% block scripts %}{% endblock scripts %}
+{% block scripts %}
+<script>
+    var language = navigator.language || navigator.browserLanguage; 
+    englishBanner = document.getElementById("englishBanner");
+    if(language.includes("es")) {
+        englishBanner.style.display = "none"
+    } else {
+        englishBanner.style.display = "block"
+    }
+</script>
+{% endblock scripts %}
