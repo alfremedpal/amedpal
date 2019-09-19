@@ -106,7 +106,7 @@
         <p class="paragraph container">
             The python code is pretty straight forward. First we check if the request type was POST, if it is,
             then we get the actual image with <i class="inline-pre">file = request.files["image"]</i>. If for some 
-            reason its filename is an empty string, then we return "error.png" which can be an already existing
+            reason its filename is an empty string, then we return "error.png", which can be an already existing
             image that would appear in the summernote editor telling the user there was a problem with their file.
         </p>
         <p class="paragraph container">
@@ -132,8 +132,8 @@
             return "error.png"
         </pre>
         <p class="paragraph container">
-            Lastly, we secure the file by importing and using <i>secure_filename</i> from <i>werkzeug.utils</i>, save the iamge,
-            and return its name.
+            Lastly, we secure the file by importing and using <i class="inline-pre">secure_filename</i> from <i class="inline-pre">werkzeug.utils</i>,
+            save the image, and return its name.
         </p>
         <p class="paragraph container">
             That's it! Everytime the user inserts an image it should be visible from the editor and saved to the server. I hope this 
