@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block header%}
+    <title>How to use DynamoDB with Flask</title>
+    <meta name="description" content="How to use DynamoDB with Flask and blueprints - Tutorial">
+{% endblock header%}
+
+{% block content %}
+
+    <!-- INFO -->
+    <div style="margin-top: 100px; margin-bottom: 50px;" class="container">
+        <h1>How to use DynamoDB with Flask</h1>
+        <h2>Tutorial</h2>
+        <div style="color: lightslategray">September 23, 2019</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="container">
+        <p class="paragraph container">
+            In this tutorial I am going to show how to use DynamoDB alongside Flask 
+            (with blueprints). Please take into account that this document is not going into
+            detail on how DynamoDB actually works, instead, it demonstrates a way you can implement
+            it into your Flask app. I does however, use basic queries to illustrate the functionality.
+        </p>
+
+        <h3 class="title">Project structure</h3>
+        <p class="paragraph container">
+            We are going to be using a <b>functional</b> blueprint structure. The app should
+            be structured something like this:
+        </p>
+        <pre class="prettyprint lang-sh">
+
+        FlaskDynamo/
+            app/
+                static/
+                templates/
+                views/
+                __init__.py
+                config.py
+            application.py
+        </pre>
+        <p class="paragraph container">
+            Remember that you can view and download the whole project going to the 
+            <a href="https://github.com/alfremedpal/amedpal-blog/tree/master/flask-and-dynamo/FlaskDynamo">GitHub repo</a>.
+        </p>
+
+        <h3 class="title">Dependencies</h3>
+        <p class="paragraph container">
+            For this particual tutorial we only need to install <i class="inline-pre">Flask</i>
+            and <i class="inline-pre">Boto3</i> (the Amazon Web Services SDK for Python).
+        </p>
+        <pre class="prettyprint lang-sh">
+
+        pip install flask
+        pip install boto3
+        </pre>
+        <div class="container info-banner">
+            <b>Suggestion:</b> Use a virtual environment to keep everything clean and in order.
+        </div>
+
+        <h3 class="title">AWS DynamoDB</h3>
+        <p class="paragraph container">
+            To make our lives easier, we are going to work with an already existing table on our
+            DynamoDB database. For this example we are going to create a table called
+            <i class="inline-pre">FlaskDynamo</i>. 
+        </p>
+        <p class="paragraph container">
+            To create a table go to your AWS console > DynamoDB and click on "Create Table". Then,
+            give it the proper name and make two keys: one primary key, called 
+            <i class="inline-pre">First Name</i>, and a sort key called <i class="inline-pre">Last Name</i>.
+        </p>
+        <div class="image row justify-content-center align-items-center">
+            <img src="/index-static/images/blog/create_dynamo_table.png" class="img-thumbnail" alt="CreateNewTable">
+        </div>
+        <p class="paragraph container">
+            With our table now created, you can manually add a few items if you want. This will help us
+            with the "show all items" example later in this tutorial. 
+        </p>
+
+        <h3 class="title">Connection</h3>
+        <p class="paragraph container">
+            We are going to create a file called <i class="inline-pre">dynamo.py</i> and place it
+            under the <i class="inline-pre">app/</i> folder. This file will serve as the connection
+            to the database.
+        </p>
+        <p class="paragraph container">
+            <i class="inline-pre">dynamo.py</i> looks like this:
+        </p>
+        <pre class="prettyprint lang-py">
+
+        # app/dynamo.py
+            
+        import boto3
+
+        def init_dynamo(table_name="FlaskDynamo"):
+            dynamodb = boto3.resource(
+                "dynamodb", 
+                region_name="us-west-1", 
+                aws_access_key_id="my_access_key", 
+                aws_secret_access_key="my_secret_key")
+            
+            table = dynamodb.Table(table_name)
+            
+            return table
+        </pre>
+        <p class="paragraph container">
+            Lets break down what is happening.
+        </p>
+        <p class="paragraph container">
+            The first thing we do after importing boto is to define a function called 
+            <i class="inline-pre">init_dynamo</i> which accepts the parameter 
+            <i class="inline-pre">table_name</i>. <i class="inline-pre">table_name</i> has 
+            the name of the table we created manually earlier by default, so you don't need to
+            declare it everytime. If we ever need to use another table that is not our main or default one,
+            we can always call the function with the new argument, for example: 
+        </p>
+        <pre class="prettyprint lang-py">
+
+        db = init_dynamo(table_name="other_table")
+        </pre>
+        <p class="paragraph container">
+            The next part is the actual connection to DynamoDB. We specify the resource that we want to
+            access is in fact DynamoDB, and we provide the region in which the database was deployed along 
+            with our access and secret keys.
+        </p>
+        <div class="container danger-banner">
+            <b>Warning:</b> It is never a good idea to hard-code your keys. If possible, always access them 
+            through environment variables or use AWS Secrets Manager.
+        </div>
+        <p class="paragraph container">
+            The last part is to connect to the table inside our database and return it so we can work with 
+            it later.
+        </p>
+
+        <h3 class="title">Views</h3>
+        <p class="paragraph container">
+            We are now going to use our <i class="inline-pre">init_dynamo</i> function in our views:
+        </p>
+        <pre class="prettyprint lang-py">
+        # views/main.py
+
+        from App.dynamo import init_dynamo
+
+        # Get all items on table
+        @mn.route("/")
+        def index():
+            db = init_dynamo()
+            all_items = db.scan(
+                Select="ALL_ATTRIBUTES")
+            return render_template("index.html", all_items=all_items)
+        
+        # Add new item to table
+        @mn.route("/new_item", methods=["GET", "POST"])
+        def new_item():
+            if request.method == "POST":
+                first_name = request.form.get("firstName")
+                last_name = request.form.get("lastName")
+                
+                db = init_dynamo()
+                db.put_item(
+                    Item={
+                        "First Name": first_name,
+                        "Last Name": last_name
+                })
+        
+                return redirect(url_for("main.new_item"))
+        
+            return render_template("new_item.html")
+        </pre>
+        <p class="paragraph container">
+            We have two routes, one to display all the items (<i class="inline-pre">/</i>) 
+            and one to add a new item (<i class="inline-pre">/new_item</i>). In both
+            routes we call our <i class="inline-pre">init_dynamo</i> function, which we use to 
+            run action on our table.
+        </p>
+        <p class="paragraph container">
+            In the main route we send all the items on the table to the HTML file. For the 'add 
+            new item' route, all we are doing is getting the values we need to create a new item 
+            from a <i class="inline-pre">form</i> tag. 
+        </p>
+        <p class="paragraph container">
+            As stated earlier, we are not going to dive into the actual use of 
+            <i class="inline-pre">boto3</i>. If you want to know how to use methods like
+            <i class="inline-pre">scan</i> or <i class="inline-pre">put_item</i> you can check
+            out the <a target="_blank" href="https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/dynamodb.html#table">official docs</a>.
+        </p>
+
+        <h3 class="title">Rendering in HTML</h3>
+        <p class="paragraph container">
+            In the case of the 'show all items' route, once we pass the items with 
+            <i class="inline-pre">return render_template("index.html", all_items=all_items)</i>, 
+            we can render them with Jinja.
+        </p>
+        <pre class="prettyprint lang-html">
+        <xmp>
+        {% raw %}<div>
+            <h1>Flask & DynamoDB</h1>
+            <h2>All names</h2>
+            {% for item in all_items["Items"] %}
+            <div>
+            	{{ item["First Name"] }} {{ item["Last Name"] }}
+            </div>
+            {% endfor %}
+        </div>{% endraw %}</xmp>
+        </pre>
+
+        <h3 class="title">The end</h3>
+        <p class="paragraph container">
+            Remember that you can find all the source code <a href="https://github.com/alfremedpal/amedpal-blog/tree/master/flask-and-dynamo/FlaskDynamo">here</a>.
+        </p>
+        <p class="paragraph container">
+            Thank you for reading and I hope this was helpful. If you notice any mistakes/typos or you have
+            feedback please feel free to send me an email to <b>info@amedpal.com</b>.
+        </p>
+    </div>
+    
+{% endblock content %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+{% endblock scripts %}
