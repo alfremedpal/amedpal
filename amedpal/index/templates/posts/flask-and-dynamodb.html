@@ -10,12 +10,19 @@
     <!-- INFO -->
     <div style="margin-top: 100px; margin-bottom: 50px;" class="container">
         <h1>How to use DynamoDB with Flask</h1>
-        <h2>Tutorial</h2>
+        <h2>Tutorial / Experiment</h2>
         <div style="color: lightslategray">September 23, 2019</div>
     </div>
 
     <!-- CONTENT -->
     <div class="container">
+
+        <div class="container attention-banner">
+            <b>Attention:</b> The following document is an experiment, so take everything as a 
+            suggestion or second option. There are probably <b>much better ways to implement this</b>.
+            Read the notes at the end for more.
+        </div>
+
         <p class="paragraph container">
             In this tutorial I am going to show how to use DynamoDB alongside Flask 
             (with blueprints). Please take into account that this document is not going into
@@ -204,13 +211,19 @@
         </div>{% endraw %}</xmp>
         </pre>
 
-        <h3 class="title">The end</h3>
+        <h3 class="title">Final notes</h3>
         <p class="paragraph container">
-            Remember that you can find all the source code <a href="https://github.com/alfremedpal/amedpal-blog/tree/master/flask-and-dynamo/FlaskDynamo">here</a>.
+            Is this the best option to interface Flask with DynamoDB? Probably not, but if you are just
+            messing around with AWS as a beginner then it might be convenient as you would not need to set up
+            any other services. <b>A better way to use DynamoDB with Flask</b> would be to make calls to a custom API
+            using Lambda and API Gateway, since you are already going to be working with AWS anyway.
         </p>
         <p class="paragraph container">
             Thank you for reading and I hope this was helpful. If you notice any mistakes/typos or you have
             feedback please feel free to send me an email to <b>info@amedpal.com</b>.
+        </p>
+        <p class="paragraph container">
+            Remember that you can find all the source code <a href="https://github.com/alfremedpal/amedpal-blog/tree/master/flask-and-dynamo/FlaskDynamo">here</a>.
         </p>
     </div>
     
