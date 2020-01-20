@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+
+    <!--
+        =====================================
+        WANT THE SOURCE?
+        VISIT THE GITHUB OVER AT
+        github.com/alfremedpal/amedpal
+        =====================================
+    -->
+
+    <!--META TAGS-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
+
+    <!--CSS-->
+    <link rel="stylesheet" href="../CSS/bootstrap.min.css">
+    <link rel="stylesheet" href="../CSS/index.min.css">
+
+    <!--FONTS-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet"> 
+
+    <!--ICONS-->
+    <link rel="apple-touch-icon" sizes="180x180" href="../favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="../favicon_io/site.webmanifest">
+    <script src="https://kit.fontawesome.com/97ab6a9fe4.js" crossorigin="anonymous"></script>
+
+    <!--PAGE EXCLUSIVE HEADER ELEMENTS-->
+    <title>Yucatan Traffic accidents</title>
+    <meta name="description" content="A small analysis and regression excercise using pandas, scikitlearn, and other data analysis tools.">
+    <link rel="canonical" href="https://www.amedpal.com/"/>
+    
+  </head>
+
+  <body>
+
+    <!--NAV BAR-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="../index.html"><b>Alfredo Medina</b></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="../blog.html">Blog</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../about-me.html">About me</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- BLOG CONTENT -->
+    <!-- INFO -->
+    <div style="margin-top: 100px; margin-bottom: 50px;" class="container">
+        <h1>Yucatan Traffic accidents</h1>
+        <h2>Analysis and regression excercise</h2>
+        <div style="color: lightslategray">April 1, 2019</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="container">
+        <p class="paragraph container">
+            I recently started an online course on machine learning with python, so in order to practice the first unit which was regression,
+            I decided to make a small excercise using a traffic accident dataset. I also took the chance to play around
+            with <b>seabron</b> as the visualization tool, instead of my usual matplotlib.
+        </p>
+    
+        <p class="paragraph container">
+            You can find both the source code and the data for this excercise 
+            <a href="https://github.com/alfremedpal/amedpal-blog/tree/master/yucatan_accidentes_vehiculares">here</a>. 
+            You can also check out my <a href="https://github.com/alfremedpal">github</a> for my othe projects.
+        </p>
+    
+        <h3 class="title">The data</h3>
+        <p class="paragraph container">
+            The dataset used on this excercise (provided by INEGI) included the information for all traffic accidents in Mexico divided into 
+            states and three indicators: <b>total number of traffic accidents</b>, <b>people injured in traffic accidents</b>, and 
+            <b>people killed in traffic accidents</b>. The data spans from 1997 up to 2017.
+        </p>
+    
+        <h3 class="title">Basic Information</h3>
+        <p class="paragraph container">
+            After reading the data and selecting only those corresponding to Yucatán, the first thing I did was to get some basic information 
+            like the total number of accidents, people injured, and people killed. Where <i>yuc_accidents</i>, <i>yuc_injured</i>, 
+            and <i>yuc_deadly</i> are subsets of a larger dataframe including the accidents that ocurred on the 31st state. 
+        </p>
+
+        <pre class="prettyprint lang-py">
+
+        yuc_accidents.Valor.sum()
+        yuc_injured.Valor.sum()
+        yuc_deadly.Valor.sum()
+        </pre>
+    
+        <p class="paragraph container">
+            The previous block of code yielded a total of <b>119692 traffic accidents</b> on which <b>81090 people got injured</b> and 
+            <b>1514 other got themselves killed</b>. 
+        </p>
+    
+        <p class="paragraph container">
+            The next thing I did was calculate the probability of getting yourself injured or killed after having suffered a traffic accident.
+        </p>
+
+        <pre class="prettyprint lang-py">
+
+            (yuc_injured.Valor.sum() / yuc_accidents.Valor.sum()) * 100
+            (yuc_deadly.Valor.sum() / yuc_accidents.Valor.sum()) * 100
+        </pre>
+    
+        <p class="paragraph container">
+            Theres a <b>67.5%</b> and <b>1.26%</b> chance of getting injured or killed, respectively, if you are in a traffic accident while in 
+            Yucatán. I know this depends on many other factors like how fast were you going or if you were intoxicated, but as a quick probability 
+            I think it's okay. I guess the best way to put this is that almost 70% of traffic accidents end up in people injured and 1% on poeple
+            killed? But now that I think of it, I am dividing people over number of accidents, so I guess it doesn't make sense? Eh, whatever,
+            if you know exactly what those 67.7% and 1.26% represent hit me up at <b>info@amedpal.com</b> and tell me how (most likely) I'm wrong, please.
+        </p>
+    
+        <h3 class="title">Visualizing</h3>
+        <p class="paragraph container">
+            This time I decided to give seaborn a chance, since I always go with matplotlib to visualize my data. I gotta say, I liked it a lot.
+            I made this satcked bar plot way easier than I would have using matplotlib, but I did use some of matplotlib's elements to render 
+            things like the legend and getting rid of the upper and right spines.
+        </p>
+    
+        <div class="row justify-content-center align-items-center">
+            <img src="images/traffic_accidents_yucatan.png" class="img-thumbnail img-spacer" alt="TrafficAccidentsYucatan">
+        </div>
+    
+        <h3 class="title">Regression</h3>
+        <p class="paragraph container">
+            Now onto what made me start this whole excercise in the first place: regressions. Regression analysis is bascially (as to 
+            my understanding) a way o find relationship between variables which can then be used to predict. So, that's what I did
+            (or at least tried).
+        </p>
+    
+        <p class="paragraph container">
+            I decided to use three regressors from the <b>scikit-learn</b> module: the <b>linear</b> regressor, the <b>polynomial</b> (degree=4)
+            regressor and the <b>random forest regressor</b> (100 estimators). I will not get into the math behind them (mainly because 
+            I don't understand it fully), but you are free to inform yourself on it if you wish, it is quite clever. 
+        </p>
+    
+        <div class="row justify-content-center align-items-center">
+            <img src="images/traffic_accidents_regressors.png" class="img-thumbnail img-spacer" alt="TrafficAccidentsRegressors">
+        </div>
+    
+        <p class="paragraph container">
+            The black dots are the original data and the colored lines are the indicated regressors. As we can see the linear regressor doesn't 
+            fit very well the dataset, while the polynomial and random forest ones <i>appear</i> to be a better option. But just to make sure
+            I ran some metrics to calculate their score, or how good they are fitting the data.  
+        </p>
+    
+        <p class="paragraph container">
+            I used the <b>variance score</b> and <b>r2 score</b> metrics for all three types of regressions and got the following results:
+            <div class="paragraph container">
+                <div class="code-line">Variance score linear regressor: <b>0.446</b></div>
+                <div class="code-line">Variance score polynomial regressor: <b>0.332</b></div>
+                <div class="code-line">Variance score random forest: <b>0.962</b></div>
+                
+                <br>
+                
+                <div class="code-line">r2 score linear regressor: <b>0.250</b></div>
+                <div class="code-line">r2 score polynomial regressor: <b>0.006</b></div>
+                <div class="code-line">r2 score random forest regressor: <b>0.895</b></div>
+            </div>
+        </p>
+    
+        <p class="paragraph container">
+            1.0 is the best possible result, that means that the <b>most effective was the random forest regressor</b> followed by the linear 
+            regressor, not the polynomial. This actually came as a suprise for me since, from my perspective, it looked like the polynomial 
+            regressor was a better fit.
+        </p>
+    
+        <h3 class="title">Predictions</h3>
+        <p class="paragraph container">
+            Now that I know which regressor fits better, it is time for some predictions! I decided to predict the total number of accidents
+            for an unknown year. The only problem was that since the random forest regressor acts with like <i>"steps"</i>,
+            any year from 2016 and onwards yields the same result: <b>5558.84 total traffic accidents</b>.
+        </p>
+    
+        <p class="paragraph container">
+            With the next best thing however, the linear regressor, I got some believable results for the years 2018 and 2019:
+            <b>7000.10</b> and <b>7130.52</b> total accidents, respectively. Now to wait for the INGEI to update the dataset.
+        </p>
+            
+        <h3 class="title">Conclusion</h3>
+        <p class="paragraph container">
+            Although this was meant just to be a small personal excercise, I felt it was kind of rushed and it could have turned out better.
+            I'm happy with the plots, though. I guess the only thig left to do is keep on working and practicing.
+        </p>
+    </div>
+
+
+    <!-- FOOTER -->
+    <div class="container footer">
+      <a class="icon" href="mailto:info@amedpal.com"><i class="fas fa-envelope"></i></a>
+      <a class="icon" href="https://github.com/alfremedpal" target="_blank"><i class="fab fa-github"></i></a>
+      <a class="icon" href="https://www.linkedin.com/in/alfredo-medina-874749121/" target="_blank"><i class="fab fa-linkedin"></i></a>  
+    </div> 
+
+    <!--JS--> 
+    <script src="../JS/jquery.min.js"></script>
+    <script src="../JS/popper.min.js"></script>
+    <script src="../JS/bootstrap.min.js"></script>
+    
+    <!--EXTRA SCRIPTS-->
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    
+
+  </body>
+
+</html>

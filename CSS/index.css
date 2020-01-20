@@ -1,0 +1,223 @@
+
+/* ================== BASIC ================== */
+body {
+    font-family: 'Montserrat', sans-serif;
+    color: #282828;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    background: #f5f5f5;
+}
+
+h1, h2, h3, h4 {
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 3em;
+    font-family: 'Montserrat', sans-serif;
+}
+
+h3.sub, small {
+    color: #aaa;
+}
+
+/* ================== NAV BAR ================== */
+.navbar-nav .nav-item .nav-link {
+    color: #282828;
+}
+
+.bg-white {
+    background-color: #f7f7f7;
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-nav .nav-item .nav-link {
+    color: #282828;
+}
+
+/* ================== INDEX ================== */
+.hello, .blog, .clients {
+    margin-top:100px;
+}
+
+.box {
+    background-color: #f7f7f7;
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+}
+
+.box:hover {
+    margin-bottom: 20px;
+    padding: 20px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+}
+
+a.box{
+    display: block;
+    text-decoration: none;
+    color: #282828;
+}
+
+.index-paragraph {
+    margin-top: 25px;
+    font-size: 1em;
+    font-family: 'Montserrat', sans-serif;
+    line-height: 30px;
+}
+
+.footer {
+    padding: 25px;
+    margin-top: 100px;
+    color: #b9b9b9;
+}
+.icon {
+    font-size: 2em;;
+    text-transform: none;
+    color: #b9b9b9;
+    margin-right: 20px;
+} 
+
+.icon:hover {
+    font-size: 2em;;
+    text-transform: none;
+    color: #8b8b8b;
+}
+
+/* ================== BLOG ================== */
+.paragraph {
+    margin-bottom: 1.5em;
+    color: black;
+    text-align: left;
+}
+
+.info-banner {
+    background-color: rgba(135, 206, 250, 0.3);
+    border-left: 5px solid rgba(135, 206, 250, 1);
+    padding: 5px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.danger-banner {
+    background-color: rgba(255, 65, 65, 0.3);
+    border-left: 5px solid rgba(255, 65, 65, 1);
+    padding: 5px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.attention-banner {
+    background-color: rgba(255, 240, 35, 0.3);
+    border-left: 5px solid rgba(255, 240, 35, 1);
+    padding: 5px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.table-scroll {
+    overflow-x: auto;
+    overflow-y: auto;
+    white-space: nowrap;
+}
+
+.img-spacer {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* ================== MEDIA QUERIES ================== */
+@media (min-width: 992px) {
+    pre {
+        width: 75%;
+        margin-left: 140px;
+    }
+
+    .paragraph {
+        padding-right: 150px;
+        padding-left: 150px;
+    }
+
+    .info-banner {
+        width: 75%;
+    }
+
+    .danger-banner {
+        width: 75%;
+    }
+
+    .attention-banner {
+        width: 75%;
+    }
+
+    .title {
+        padding-left: 150px;
+        font-weight: bold;
+    }
+
+    .list {
+        padding-left: 250px;
+    }
+}
+
+@media (max-width:480px) and (min-width:320px) {
+    pre {
+        font-size: 0.95em;
+    }
+}
+
+.image {
+    padding: 10px;
+    margin-bottom: 1.5em;
+}
+
+.inline-pre {
+    border-radius: 5px;
+    font-size: 0.8em;
+    background-color: rgba(200, 200, 200, 0.5);
+    color: black;
+    font-style: normal; 
+    font-family: 'Courier New', Courier, monospace;
+    padding: 3px;
+    
+}
+
+/* desert scheme ported from vim to google prettify */
+pre.prettyprint { display: block; background-color: #333 }
+pre .nocode { background-color: transparent; color: #000 }
+pre .str { color: #ffa0a0 } /* string  - pink */
+pre .kwd { color: #f0e68c; font-weight: bold }
+pre .com { color: #87ceeb } /* comment - skyblue */
+pre .typ { color: #98fb98 } /* type    - lightgreen */
+pre .lit { color: #cd5c5c } /* literal - darkred */
+pre .pun { color: #fff }    /* punctuation */
+pre .pln { color: #fff }    /* plaintext */
+pre .tag { color: #f0e68c; font-weight: bold } /* html/xml tag    - lightyellow */
+pre .atn { color: #bdb76b; font-weight: bold } /* attribute name  - khaki */
+pre .atv { color: #ffa0a0 } /* attribute value - pink */
+pre .dec { color: #98fb98 } /* decimal         - lightgreen */
+
+/* Specify class=linenums on a pre to get line numbering */
+ol.linenums { margin-top: 0; margin-bottom: 0; color: #AEAEAE } /* IE indents via margin-left */
+li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8 { list-style-type: none }
+/* Alternate shading for lines */
+
+@media print {
+  pre.prettyprint { background-color: transparent }
+  pre .str, code .str { color: #060 }
+  pre .kwd, code .kwd { color: #006; font-weight: bold }
+  pre .com, code .com { color: #600; font-style: italic }
+  pre .typ, code .typ { color: #404; font-weight: bold }
+  pre .lit, code .lit { color: #044 }
+  pre .pun, code .pun { color: #440 }
+  pre .pln, code .pln { color: #000 }
+  pre .tag, code .tag { color: #006; font-weight: bold }
+  pre .atn, code .atn { color: #404 }
+  pre .atv, code .atv { color: #060 }
+}
