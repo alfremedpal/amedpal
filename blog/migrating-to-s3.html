@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+
+    <!--
+        =====================================
+        WANT THE SOURCE?
+        VISIT THE GITHUB OVER AT
+        github.com/alfremedpal/amedpal
+        =====================================
+    -->
+
+    <!--META TAGS-->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
+
+    <!--CSS-->
+    <link rel="stylesheet" href="../CSS/bootstrap.min.css">
+    <link rel="stylesheet" href="../CSS/index.min.css">
+
+    <!--FONTS-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet"> 
+
+    <!--ICONS-->
+    <link rel="apple-touch-icon" sizes="180x180" href="../favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="../favicon_io/site.webmanifest">
+    <script src="https://kit.fontawesome.com/97ab6a9fe4.js" crossorigin="anonymous"></script>
+
+    <!--PAGE EXCLUSIVE HEADER ELEMENTS-->
+    <title>Migrating to static hosting with S3</title>
+    <meta name="description" content="Sharing my experience on migrating my webste to AWS' S3; all the pros, cons, and in-betweens.">
+    <link rel="canonical" href="https://www.amedpal.com/"/>
+    
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-137399968-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-137399968-1');
+    </script>
+
+  </head>
+
+  <body>
+
+    <!--NAV BAR-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="http://amedpal.com/"><b>Alfredo Medina</b></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="../blog.html">Blog</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../about-me.html">About me</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- BLOG CONTENT -->
+    <div style="margin-top: 100px; margin-bottom: 50px;" class="container">
+        <h1>Migrating to static hosting with S3</h1>
+        <h2>Experience</h2>
+        <div style="color: lightslategray">February 3, 2020</div>
+    </div>
+
+    <div class="container">
+
+        <p class="paragraph container">
+            Last week I finally decided to migrate my personal website from <a href="#">pythonanywhere</a> to
+            an AWS S3 bucket. It is a change I've been wanting to make for a long time but for some reason I could
+            never find time to do it. In this little blog post I'll be sharing what I learnt in the process.
+        </p>
+
+        <h2 class="title">Transferring the domain name to Route53</h2>
+        <p class="paragraph container">
+            I figured that if I was moving to AWS then I might go all the way and move my domain name ownership as well.
+            The offcial Route53 docs were a little heavy on the reading side for me, but still useful. I still managed 
+            to screw up though, and I ended going offline for about 10 days: the amount of time my old registrar (namecheap)
+            took to transfer the domain. 
+        </p>
+
+        <p class="paragraph container">
+            I had never transferred any domain names to Route53 or any other registrar for that matter, so it was kind of scary
+            at first due to all the e-mail confirmations and codes; they take all this domain ownership very seriously,
+            and I'm glad they do.
+        </p>
+
+        <h2 class="title">Creating the S3 bucket</h2>
+        <p class="paragraph container">
+            I was impressed by how easy this was, plus, the 
+            <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-custom-domain-walkthrough.html">
+                small tutorial/doc
+            </a> 
+            AWS offers is beyond useful, clear, simple, and straight to the point. It was such a fun experience and I 
+            really enjoyed the whole process.
+        </p>
+
+        <p class="paragraph container">
+            Now, I'll be listing some pros and cons (from my point of view) of migrating to a static website using S3.
+        </p>
+
+        <h3 class="title">Pros</h3>
+        <div class="paragraph container">
+            <ul>
+                <li>Cheaper</li>
+                <ul>
+					<li>
+						I used to pay $5/month with pythonanywhere (a great deal for what I was getting), but now I pay $0.50
+						a month for the Route53 hosting zone and I think that's it because I'm still inside the 12 months of the
+						S3 free tier. With what I'm saving I might even set up an email with WorkMail.
+					</li>
+                </ul>
+				<li>Flexible editing</li>
+				<ul>
+					<li>
+						I'm working with the .html files directly now, no WYSIWYG editor or anything, so I kinda have more
+						control over what I can do since I operate on the .html and .css files directly.
+					</li>
+                </ul>
+				<li>Lighter</li>
+				<ul>
+					<li>
+						Since I'm serving the files directly it loads a little bit faster, and the overral sinze of the files
+						is minimal.
+					</li>
+                </ul>
+				<li>Serverless</li>
+				<ul>
+					<li>
+						I don't need to manage servers, patches, updates, or anything of the sorts. If I want to update a file
+						I literallt just drag and drop the new version.
+					</li>
+                </ul>
+            </ul>
+		</div>
+		
+		<h3 class="title">Cons</h3>
+        <div class="paragraph container">
+            <ul>
+                <li>Tedious</li>
+                <ul>
+					<li>
+						Sometimes it can be a bit tiring to be working on an IDE directly with the files instead of a web editor 
+						like summernote or froala.
+					</li>
+                </ul>
+				<li>No server-side scripting</li>
+				<ul>
+					<li>
+						Since it is a static wbesite it works better to <i>show</i> things than to <i>do</i> things. I can't have
+						a dynamically generated graph or stuff like that.
+					</li>
+				</ul>
+				<li>Repetitiveness</li>
+				<ul>
+					<li>
+						All my files have the same header, footer, and meta files; I can't use a template like in Flask + Jinja
+						to just write the content and keep everything cleaner.
+					</li>
+                </ul>
+            </ul>
+		</div>
+		
+		<h2 class="title">Final thoughts and future</h2>
+        <p class="paragraph container">
+		   It was a fun, new experience and I'm glad I made the change. The next step is to use a CloudFront distribution so I can 
+		   serve my files with https.
+        </p>
+
+            
+        
+    </div>
+
+    <!-- FOOTER -->
+    <div class="container footer">
+      <a class="icon" href="mailto:info@amedpal.com"><i class="fas fa-envelope"></i></a>
+      <a class="icon" href="https://github.com/alfremedpal" target="_blank"><i class="fab fa-github"></i></a>
+      <a class="icon" href="https://www.linkedin.com/in/alfredo-medina-874749121/" target="_blank"><i class="fab fa-linkedin"></i></a>  
+    </div> 
+
+    <!--JS--> 
+    <script src="../JS/jquery.min.js"></script>
+    <script src="../JS/popper.min.js"></script>
+    <script src="../JS/bootstrap.min.js"></script>
+    
+    <!--EXTRA SCRIPTS-->
+    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    
+
+  </body>
+
+</html>
